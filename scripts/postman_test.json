@@ -1,0 +1,131 @@
+{
+  "info": {
+    "_postman_id": "b3b9f1f6-fc45-4d92-a188-d0de54e9e97f",
+    "name": "Viggo NFS-e Porto Alegre API",
+    "description": "Coleção para testes locais ou produção do backend Node.js integrado ao Supabase para emissão de NFS-e Nacional para psicólogos de Porto Alegre.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Autenticação",
+      "item": [
+        {
+          "name": "1. Login do Psicólogo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"psicologo@exemplo.com\",\n  \"senha\": \"suasenha123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "login"
+              ]
+            },
+            "description": "Efetua login no Supabase Auth através do backend e retorna o access_token (JWT)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Testes Fiscais",
+      "item": [
+        {
+          "name": "2. Testar Homologação (DPS Fake)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "COLE_O_JWT_AQUI_OU_USE_O_SCRIPT_PS1",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3000/homologacao/testar",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "homologacao",
+                "testar"
+              ]
+            },
+            "description": "Gera uma DPS simulada de Porto Alegre, realiza a assinatura XMLDSig com certificado A1 e executa o teste de transmissão mTLS (ou mock) para o Serpro."
+          },
+          "response": []
+        },
+        {
+          "name": "3. Solicitar Emissão de NFS-e (Fila)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "COLE_O_JWT_AQUI_OU_USE_O_SCRIPT_PS1",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valor\": 250.00,\n  \"tomador_nome\": \"Maria de Souza Silveira\",\n  \"tomador_documento\": \"12345678909\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/emitir",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "emitir"
+              ]
+            },
+            "description": "Garante um número DPS atômico em transação segura no banco, insere o registro na tabela notas_fiscais com status 'fila' e agenda o processamento assíncrono."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
