@@ -220,7 +220,144 @@ async function emitirNfse(req, res) {
   }
 }
 
+/**
+ * Rota GET /perfil
+ * Retorna o perfil do psicólogo autenticado (Isolado via RLS)
+ */
+async function obterPerfil(req, res) {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ sucesso: false, mensagem: 'Cabeçalho de autorização (JWT) ausente.' });
+    }
+
+    const tenantClient = getTenantClient(authHeader);
+    const { data: perfil, error } = await tenantClient
+      .from('perfis_psicologos')
+      .select('*')
+      .maybeSingle();
+
+    if (error) {
+      return res.status(500).json({ sucesso: false, mensagem: `Erro ao consultar perfil: ${error.message}` });
+    }
+
+    return res.status(200).json({ sucesso: true, perfil });
+  } catch (error) {
+    return res.status(500).json({ sucesso: false, mensagem: error.message });
+  }
+}
+
+/**
+ * Rota POST/PUT /perfil
+ * Cria ou atualiza o perfil do psicólogo autenticado (Isolado via RLS)
+ */
+async function salvarPerfil(req, res) {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ sucesso: false, mensagem: 'Cabeçalho de autorização (JWT) ausente.' });
+    }
+
+    const tenantClient = getTenantClient(authHeader);
+    const { data: { user }, error: authError } = await tenantClient.auth.getUser();
+
+    if (authError || !user) {
+      return res.status(401).json({ sucesso: false, mensagem: 'JWT inválido ou expirado.' });
+    }
+
+    const userId = user.id;
+    const { nome, cpf, cnpj, im, certificado_a1_path, certificado_senha_key } = req.body;
+
+    const { data: perfil, error } = await tenantClient
+      .from('perfis_psicologos')
+      .upsert({
+        user_id: userId,
+        nome: nome?.trim(),
+        cpf: cpf?.replace(/\D/g, ''),
+        cnpj: cnpj?.replace(/\D/g, ''),
+        im: im?.trim(),
+        certificado_a1_path: certificado_a1_path || null,
+        certificado_senha_key: certificado_senha_key || null
+      })
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(500).json({ sucesso: false, mensagem: `Erro ao salvar perfil: ${error.message}` });
+    }
+
+    return res.status(200).json({ sucesso: true, mensagem: 'Perfil salvo com sucesso.', perfil });
+  } catch (error) {
+    return res.status(500).json({ sucesso: false, mensagem: error.message });
+  }
+}
+
+/**
+ * Rota GET /notas
+ * Lista todas as notas fiscais do inquilino logado (Isolado via RLS)
+ */
+async function listarNotas(req, res) {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ sucesso: false, mensagem: 'Cabeçalho de autorização (JWT) ausente.' });
+    }
+
+    const tenantClient = getTenantClient(authHeader);
+    const { data: notas, error } = await tenantClient
+      .from('notas_fiscais')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      return res.status(500).json({ sucesso: false, mensagem: `Erro ao consultar notas: ${error.message}` });
+    }
+
+    return res.status(200).json({ sucesso: true, notas });
+  } catch (error) {
+    return res.status(500).json({ sucesso: false, mensagem: error.message });
+  }
+}
+
+/**
+ * Rota GET /notas/:id
+ * Detalhes de uma nota fiscal específica (Isolado via RLS)
+ */
+async function obterNota(req, res) {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ sucesso: false, mensagem: 'Cabeçalho de autorização (JWT) ausente.' });
+    }
+
+    const tenantClient = getTenantClient(authHeader);
+    const { id } = req.params;
+
+    const { data: nota, error } = await tenantClient
+      .from('notas_fiscais')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) {
+      return res.status(500).json({ sucesso: false, mensagem: `Erro ao obter nota: ${error.message}` });
+    }
+
+    if (!nota) {
+      return res.status(404).json({ sucesso: false, mensagem: 'Nota fiscal não encontrada ou sem permissão.' });
+    }
+
+    return res.status(200).json({ sucesso: true, nota });
+  } catch (error) {
+    return res.status(500).json({ sucesso: false, mensagem: error.message });
+  }
+}
+
 module.exports = {
   testHomologacao,
-  emitirNfse
+  emitirNfse,
+  obterPerfil,
+  salvarPerfil,
+  listarNotas,
+  obterNota
 };

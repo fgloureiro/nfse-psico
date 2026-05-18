@@ -1,5 +1,12 @@
 const express = require('express');
-const { testHomologacao, emitirNfse } = require('../controllers/nfseController');
+const { 
+  testHomologacao, 
+  emitirNfse,
+  obterPerfil,
+  salvarPerfil,
+  listarNotas,
+  obterNota
+} = require('../controllers/nfseController');
 const { login } = require('../controllers/authController');
 
 const router = express.Router();
@@ -7,23 +14,34 @@ const router = express.Router();
 /**
  * Rota POST /login
  * Realiza a autenticação de usuários contra o banco do Supabase.
- * Recebe: { "email": "...", "senha": "..." }
- * Retorna: { "sucesso": true, "access_token": "...", "user_id": "..." }
  */
 router.post('/login', login);
 
 /**
+ * Rotas de Perfil Profissional do Psicólogo
+ * Requer Token JWT no cabeçalho Authorization: Bearer <JWT>
+ */
+router.get('/perfil', obterPerfil);
+router.post('/perfil', salvarPerfil);
+router.put('/perfil', salvarPerfil);
+
+/**
  * Rota POST /homologacao/testar
- * Gera, assina e transmite uma DPS simulada em homologação para validar as credenciais e o fluxo fiscal.
- * Requer o Token JWT obtido no login no cabeçalho: Authorization: Bearer <JWT>
+ * Testa a geração e envio de DPS.
  */
 router.post('/homologacao/testar', testHomologacao);
 
 /**
  * Rota POST /emitir
- * Gera uma DPS real e a envia para a fila de processamento assíncrono nacional.
- * Requer o Token JWT obtido no login no cabeçalho: Authorization: Bearer <JWT>
+ * Envia uma DPS real para a fila de processamento.
  */
 router.post('/emitir', emitirNfse);
+
+/**
+ * Rotas de Histórico de Notas Fiscais (NFS-e)
+ * Requer Token JWT no cabeçalho Authorization: Bearer <JWT>
+ */
+router.get('/notas', listarNotas);
+router.get('/notas/:id', obterNota);
 
 module.exports = router;
