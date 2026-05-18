@@ -189,8 +189,8 @@ export default function DashboardPage() {
       )}
 
       {/* ========================================== */}
-      /* GRID DE CARDS KPI (Estilo SaaS Premium)    */
-      /* ========================================== */}
+      {/* GRID DE CARDS KPI (Estilo SaaS Premium)    */}
+      {/* ========================================== */}
       <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         
         {/* KPI: Faturamento */}
@@ -268,8 +268,8 @@ export default function DashboardPage() {
       </section>
 
       {/* ========================================== */}
-      /* TABELA E CARDS DE NOTAS RECENTES          */
-      /* ========================================== */}
+      {/* TABELA E CARDS DE NOTAS RECENTES          */}
+      {/* ========================================== */}
       <section className="rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
         
         {/* Header do Bloco */}

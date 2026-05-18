@@ -294,8 +294,8 @@ export default function ClientesPage() {
       </div>
 
       {/* ========================================== */}
-      /* OVERLAY DIALOG: CONFIRMAÇÃO DE EXCLUSÃO    */
-      /* ========================================== */}
+      {/* OVERLAY DIALOG: CONFIRMAÇÃO DE EXCLUSÃO    */}
+      {/* ========================================== */}
       {deletingId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           

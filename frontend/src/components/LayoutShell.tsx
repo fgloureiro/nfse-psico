@@ -50,8 +50,8 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
         
         {/* ========================================== */}
-        /* DESKTOP SIDEBAR (Fixo no lado esquerdo)    */
-        /* ========================================== */}
+        {/* DESKTOP SIDEBAR (Fixo no lado esquerdo)    */}
+        {/* ========================================== */}
         <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col bg-slate-900 text-slate-100 dark:bg-slate-900 border-r border-slate-800">
           {/* Cabeçalho do Sidebar */}
           <div className="flex h-16 items-center gap-2 px-6 border-b border-slate-800">
@@ -104,8 +104,8 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
         </aside>
 
         {/* ========================================== */}
-        /* MOBILE TOP HEADER (Sticky no Mobile/Tablet) */
-        /* ========================================== */}
+        {/* MOBILE TOP HEADER (Sticky no Mobile/Tablet) */}
+        {/* ========================================== */}
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 dark:border-slate-800 dark:bg-slate-900 lg:hidden">
           <div className="flex items-center gap-3">
             <button
@@ -140,8 +140,8 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* ========================================== */}
-        /* DRAWER LATERAL (Menu responsivo para Mobile) */
-        /* ========================================== */}
+        {/* DRAWER LATERAL (Menu responsivo para Mobile) */}
+        {/* ========================================== */}
         {isMobileMenuOpen && (
           <div className="fixed inset-0 z-40 lg:hidden">
             {/* Backdrop com Safe-Zone */}
@@ -206,8 +206,8 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
         )}
 
         {/* ========================================== */}
-        /* ÁREA DE CONTEÚDO PRINCIPAL (Main Container) */
-        /* ========================================== */}
+        {/* ÁREA DE CONTEÚDO PRINCIPAL (Main Container) */}
+        {/* ========================================== */}
         <main className="lg:pl-64 flex flex-col min-h-screen">
           <div className="flex-1 px-4 py-6 sm:p-8 md:p-10 max-w-7xl w-full mx-auto">
             {children}
