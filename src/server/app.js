@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const env = require('../config/env');
 const nfseRoutes = require('../routes/nfseRoutes');
+const clientesRoutes = require('../routes/clientesRoutes');
 
 const app = express();
 
@@ -20,8 +21,9 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Acoplamento das rotas principais da API (POST /homologacao/testar e POST /emitir)
+// Acoplamento das rotas principais da API (POST /homologacao/testar, POST /emitir, POST /login e Clientes)
 app.use('/', nfseRoutes);
+app.use('/clientes', clientesRoutes);
 
 // Tratamento de erros globais (Fallback de segurança)
 app.use((err, req, res, next) => {

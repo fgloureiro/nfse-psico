@@ -233,3 +233,49 @@ CREATE TRIGGER trigger_update_notas_fiscais
 CREATE TRIGGER trigger_update_fila_emissao
     BEFORE UPDATE ON public.fila_emissao
     FOR EACH ROW EXECUTE FUNCTION public.atualizar_coluna_updated_at();
+
+-- ---------------------------------------------------------------------
+-- 8. Tabela de Clientes (Tomadores de Serviço) & Políticas RLS
+-- ---------------------------------------------------------------------
+
+-- Tabela: clientes
+CREATE TABLE IF NOT EXISTS public.clientes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    usuario_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    nome TEXT NOT NULL,
+    cpf_cnpj VARCHAR(14) NOT NULL,
+    email TEXT,
+    telefone TEXT,
+    logradouro TEXT,
+    numero TEXT,
+    complemento TEXT,
+    bairro TEXT,
+    cidade TEXT,
+    uf VARCHAR(2),
+    cep VARCHAR(8),
+    tipo VARCHAR(2) NOT NULL CHECK (tipo IN ('PF', 'PJ')),
+    data_cadastro TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    UNIQUE(cpf_cnpj, usuario_id)
+);
+
+-- Habilitando RLS
+ALTER TABLE public.clientes ENABLE ROW LEVEL SECURITY;
+
+-- Políticas RLS para Clientes
+CREATE POLICY "clientes_select_policy" ON public.clientes
+    FOR SELECT TO authenticated USING (auth.uid() = usuario_id);
+
+CREATE POLICY "clientes_insert_policy" ON public.clientes
+    FOR INSERT TO authenticated WITH CHECK (auth.uid() = usuario_id);
+
+CREATE POLICY "clientes_update_policy" ON public.clientes
+    FOR UPDATE TO authenticated USING (auth.uid() = usuario_id) WITH CHECK (auth.uid() = usuario_id);
+
+CREATE POLICY "clientes_delete_policy" ON public.clientes
+    FOR DELETE TO authenticated USING (auth.uid() = usuario_id);
+
+-- Trigger para updated_at na tabela clientes
+CREATE TRIGGER trigger_update_clientes
+    BEFORE UPDATE ON public.clientes
+    FOR EACH ROW EXECUTE FUNCTION public.atualizar_coluna_updated_at();
